@@ -10,7 +10,7 @@ let package = Package(
         .executable(name: "SwitchmanApp", targets: ["SwitchmanApp"]),
     ],
     targets: [
-        .target(name: "SwitchmanCore"),
+        .target(name: "SwitchmanCore", resources: [.copy("Resources/public_suffix_list.dat")]),
         .executableTarget(name: "switchman-cli", dependencies: ["SwitchmanCore"]),
         .executableTarget(name: "SwitchmanApp", dependencies: ["SwitchmanCore"]),
         .testTarget(name: "SwitchmanCoreTests", dependencies: ["SwitchmanCore"]),

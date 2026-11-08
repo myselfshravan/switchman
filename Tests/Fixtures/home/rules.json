@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "pattern": { "urlPrefix": "github.com/acme/" },
+      "sourceApp": "com.tinyspeck.slackmacgap",
+      "open": { "bundleID": "com.brave.Browser" },
+      "note": "work org, from Slack"
+    },
+    {
+      "pattern": { "hostWildcard": "*.google.com" },
+      "alwaysAsk": true
+    },
+    {
+      "pattern": { "host": "youtube.com" },
+      "open": { "bundleID": "com.google.Chrome", "profileDirectory": "Profile 1" }
+    },
+    {
+      "pattern": { "host": "news.ycombinator.com" },
+      "open": { "bundleID": "com.brave.Browser" },
+      "enabled": false
+    }
+  ]
+}

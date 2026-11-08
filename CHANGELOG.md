@@ -8,4 +8,6 @@ uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- URL normalisation with a vendored Public Suffix List, rule patterns, ordered router.
+- `rules.json` format and `switchman explain` / `switchman rules list|validate`.
 - Project scaffold: SwiftPM package (`SwitchmanCore`, `switchman` CLI, `SwitchmanApp`), CI, MIT license.

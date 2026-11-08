@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "rules": [
+    { "pattern": { "regex": "([unclosed" }, "alwaysAsk": true },
+    { "pattern": { "host": "" }, "open": { "bundleID": "com.brave.Browser" } }
+  ]
+}

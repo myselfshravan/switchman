@@ -20,8 +20,7 @@ public enum HistoryImporter {
             ?? []
         if profiles.isEmpty { profiles = [ChromiumProfile(directory: "Default", name: "Default")] }
         let targets = ChromiumProfiles.targets(bundleID: bundleID, profiles: profiles)
-        let all = profiles.count > 1 ? Array(zip(targets, profiles)) : [(targets[0], profiles[0])]
-        return all.map { target, profile in
+        return zip(targets, profiles).map { target, profile in
             (
                 target,
                 root.appendingPathComponent(profile.directory).appendingPathComponent("History")

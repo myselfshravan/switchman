@@ -28,9 +28,13 @@ public struct PublicSuffixList: Sendable {
         self.exceptions = exceptions
     }
 
-    /// The list vendored in `Resources/public_suffix_list.dat`.
+    /// The list vendored in `Resources/public_suffix_list.dat`. Inside `Switchman.app` the
+    /// resource bundle lives in `Contents/Resources`, where SwiftPM's `Bundle.module` doesn't look.
     public static let bundled: PublicSuffixList = {
-        let url = Bundle.module.url(forResource: "public_suffix_list", withExtension: "dat")!
+        let inApp = Bundle.main.resourceURL
+            .flatMap { Bundle(url: $0.appendingPathComponent("Switchman_SwitchmanCore.bundle")) }
+        let bundle = inApp ?? Bundle.module
+        let url = bundle.url(forResource: "public_suffix_list", withExtension: "dat")!
         return PublicSuffixList(text: try! String(contentsOf: url, encoding: .utf8))
     }()
 

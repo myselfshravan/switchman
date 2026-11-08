@@ -27,16 +27,24 @@ Running checklist. The spec is the design brief. This file tracks progress and d
   - [x] `RuleStore`: load/save/add-on-top, atomic writes, corrupt file keeps last good rules + `lastError`
   - [x] `DecisionLog`: JSONL append, corrupt lines skipped, rolling cap (default 20k)
 
+- [x] **M3 — App shell** (built after the pure core for M4/M5, so the shell is glue only)
+  - [x] `Info.plist`: http/https handler (`LSHandlerRank Default`), `switchman://` reserved, `LSUIElement`
+  - [x] Apple Event `kAEGetURL` intake with sender PID → source bundle ID, Option → force picker
+  - [x] Browser discovery (+ Chromium profiles via Core), link routers excluded, popular first
+  - [x] Launch via NSWorkspace; Chromium profiles via a new instance with `--profile-directory`
+  - [x] Picker: non-activating panel at cursor, 1–9 / ↑↓ / Return / Esc, ⌘R "Remember for <domain>"
+  - [x] Decision logging (`picked`, `autoRouted`, `corrected`), fallback browser, never Switchman itself
+  - [x] Smoke-tested the built bundle: onboarding window, picker, rule routing to Safari, privacy of log line
+- [x] **M4 — Learning**: `SuggestionEngine` + golden test, `switchman suggest`, Suggestions tab (Accept / Edit / Reject, rejections remembered in `rejected.json`)
+- [x] **M5 — Import**: `HistoryImporter` (SQLite3, temp copy), `switchman import`, Import tab
+- [x] **M6 — Explain & correct**: last 10 links with reasons in the menu, "Re-open last link in…" (menu + global hotkey) → `.corrected` decisions → "rule #N disagrees with you K times" with one-click fix
+
 ## In progress
 
 _Nothing in progress._
 
 ## Next
 
-- [ ] **M3** — Minimal app: default-browser registration, URL intake, routing, picker, logging, fallback
-- [ ] **M4** — `SuggestionEngine` + inbox + `switchman suggest`
-- [ ] **M5** — `HistoryImporter` + import UI
-- [ ] **M6** — Explain-in-menu, last links, correction hotkey
 - [ ] **M7** — Polish, packaging, `v0.1.0`
 
 ## Decisions log
@@ -54,3 +62,12 @@ _Nothing in progress._
 | 2026-11-09 | `rules.json` = `{"version":1,"rules":[…]}`. Action is `"open": {bundleID, profileDirectory?}` or `"alwaysAsk": true`; source key is `sourceApp`; `id`/`enabled`/`origin` optional when hand-writing. Keys sorted on write. | Readable, hand-editable, git-diffable; the version allows later migrations. |
 | 2026-11-09 | `rules.json` format frozen as of M2 (any change now needs the author's OK). | Brief §13. |
 | 2026-11-09 | Accepted/learned rules are inserted at the **top** of the list. | A learned rule is always narrower than or equal to what the user has; first-match-wins means it must come first to take effect. |
+| 2026-11-09 | Engine split order is host → **account hint** → path → source (brief: host → path → source). | Google-style `authuser` splits resolve before path splits multiply rules per path × account. Hint scopes become `regex` rules, e.g. `^docs\.google\.com(/[^?]*)?\?authuser=1$`. |
+| 2026-11-09 | Sibling suggestions never overlap (exact host / whole-segment prefix / exact hint set). Only the source split emits an any-source fallback; `RuleStore.add` keeps it below leading source-scoped rules. | Accept order can't change behaviour. |
+| 2026-11-09 | Decisions routed by an `alwaysAsk` rule still count as evidence. | That's where refinements come from: "Google is ambiguous" → "Docs with authuser=1 is Brave". |
+| 2026-11-09 | No `BrowserLauncher`/`BrowserDiscovery`/`Clock` protocols. Shell logic worth testing (picker keys, remember-rule, tracking params, browser ranking) lives in Core instead. | KISS rule: no single-implementation protocols unless a test needs the seam, and no shell tests need one. |
+| 2026-11-09 | A Chromium target with a profile launches a new instance with `--profile-directory=X <url>` (`createsNewApplicationInstance`). | A plain `open` ignores arguments when the browser is already running. The new instance hands off to the running one, which honours the profile. |
+| 2026-11-09 | Browsers with one profile are targeted without `profileDirectory` (picker, rules and import agree). | Otherwise `Default` vs nil would split learning for single-profile users. |
+| 2026-11-09 | Imported history isn't persisted. The Import tab / `switchman import` run the engine on it and show suggestions to accept. | Keeps the 20k decision log for live clicks; history can be re-read any time. |
+| 2026-11-09 | Bundle ID `io.github.myselfshravan.switchman`. CLI ships inside the app as `Contents/MacOS/switchman-cli`. | Case-insensitive APFS: `switchman` would overwrite the `Switchman` app binary. |
+| 2026-11-09 | Core loads the PSL from `Contents/Resources/Switchman_SwitchmanCore.bundle` first. | SwiftPM's `Bundle.module` looks in the `.app` root, which isn't a valid place for bundle contents. |

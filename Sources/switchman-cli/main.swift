@@ -8,6 +8,8 @@ let usage = """
       explain <url> [--source <bundleID>]   show where a link would open, and why
       suggest [--min-support 5] [--min-confidence 0.9]
                                             rule suggestions from the decision log
+      import [--chrome <dir>] [--brave <dir>]
+                                            suggestions from browser history (dry run)
       rules list|validate                   print or check rules.json
       --version                             print the version
 
@@ -26,6 +28,7 @@ do {
     switch argv.first {
     case "explain": try explain(arguments)
     case "suggest": try suggest(arguments)
+    case "import": try importHistory(arguments)
     case "rules": try rules(arguments)
     case "--version": print("switchman \(Switchman.version)")
     case "--help", "-h": print(usage)

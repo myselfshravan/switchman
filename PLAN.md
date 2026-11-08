@@ -22,13 +22,17 @@ Running checklist. The spec is the design brief. This file tracks progress and d
   - [x] CLI: `switchman explain`, `switchman rules list|validate`, `--home <dir>`
   - [x] Coverage gate ≥ 90 % on `SwitchmanCore` in `scripts/check.sh` / CI
 
+- [x] **M2 — Stores**
+  - [x] `Decision` (+ default weights: picked/autoRouted 1, corrected 3, imported `log2(1+visits)`)
+  - [x] `RuleStore`: load/save/add-on-top, atomic writes, corrupt file keeps last good rules + `lastError`
+  - [x] `DecisionLog`: JSONL append, corrupt lines skipped, rolling cap (default 20k)
+
 ## In progress
 
 _Nothing in progress._
 
 ## Next
 
-- [ ] **M2** — `RuleStore` + `DecisionLog`
 - [ ] **M3** — Minimal app: default-browser registration, URL intake, routing, picker, logging, fallback
 - [ ] **M4** — `SuggestionEngine` + inbox + `switchman suggest`
 - [ ] **M5** — `HistoryImporter` + import UI
@@ -48,3 +52,5 @@ _Nothing in progress._
 | 2026-11-09 | `URLKey` keeps a non-default `port` and a `scheme` (brief's struct had neither). | Brief says drop only 80/443; dev servers on `localhost:3000` vs `:8080` are worth telling apart. Decision log needs the scheme. |
 | 2026-11-09 | Matching string is `host[:port]/seg/seg?hint=v` (hints sorted). `regex` patterns search it; `urlPrefix` matches whole segments, so `github.com/acme` ≠ `github.com/acmecorp`. | Lets the learner express hint splits (e.g. Google `authuser`) with the existing `regex` pattern, no new pattern kind. |
 | 2026-11-09 | `rules.json` = `{"version":1,"rules":[…]}`. Action is `"open": {bundleID, profileDirectory?}` or `"alwaysAsk": true`; source key is `sourceApp`; `id`/`enabled`/`origin` optional when hand-writing. Keys sorted on write. | Readable, hand-editable, git-diffable; the version allows later migrations. |
+| 2026-11-09 | `rules.json` format frozen as of M2 (any change now needs the author's OK). | Brief §13. |
+| 2026-11-09 | Accepted/learned rules are inserted at the **top** of the list. | A learned rule is always narrower than or equal to what the user has; first-match-wins means it must come first to take effect. |

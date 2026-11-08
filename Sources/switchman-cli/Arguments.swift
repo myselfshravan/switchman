@@ -45,12 +45,9 @@ struct Arguments {
 
     /// The rules in `rules.json`; none if the file does not exist yet.
     func loadRules() throws -> [Rule] {
-        let url = location.rules
-        guard FileManager.default.fileExists(atPath: url.path) else { return [] }
-        do {
-            return try RulesFile.decode(Data(contentsOf: url))
-        } catch {
-            throw CLIError.data("cannot read \(url.path): \(error)")
-        }
+        var store = RuleStore(location: location)
+        store.reload()
+        if let error = store.lastError { throw CLIError.data("cannot read \(error)") }
+        return store.rules
     }
 }

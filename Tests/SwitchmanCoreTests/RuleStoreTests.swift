@@ -55,4 +55,29 @@ import Testing
         #expect(store.rules.first == added)
         #expect(store.rules.count == 2)
     }
+
+    @Test func anySourceRuleGoesBelowLeadingSourceScopedRules() throws {
+        var store = RuleStore(location: location)
+        let fromSlack = Rule(
+            pattern: .host("figma.com"), sourceAppBundleID: slack, action: .open(brave))
+        let other = Rule(pattern: .host("x.com"), action: .open(brave))
+        try store.save([fromSlack, other])
+        let anySource = Rule(pattern: .host("figma.com"), action: .open(chrome))
+        try store.add(anySource)
+        #expect(store.rules == [fromSlack, anySource, other])
+
+        let scoped = Rule(pattern: .host("y.com"), sourceAppBundleID: slack, action: .alwaysAsk)
+        try store.add(scoped)
+        #expect(store.rules.first == scoped)
+    }
+
+    @Test func rejectedShapesRoundTrip() throws {
+        let store = RuleStore(location: location)
+        #expect(store.loadRejected().isEmpty)
+        let shape = SuggestionShape(
+            pattern: .host("a.com"), sourceAppBundleID: nil, action: .alwaysAsk)
+        try store.reject(shape)
+        try store.reject(shape)
+        #expect(store.loadRejected() == [shape])
+    }
 }

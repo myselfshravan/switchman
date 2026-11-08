@@ -15,4 +15,5 @@ public struct StoreLocation: Sendable {
 
     public var rules: URL { base.appendingPathComponent("rules.json") }
     public var decisions: URL { base.appendingPathComponent("decisions.jsonl") }
+    public var rejected: URL { base.appendingPathComponent("rejected.json") }
 }

@@ -61,5 +61,6 @@ import Testing
         #expect(location.base.path.hasSuffix("Library/Application Support/Switchman"))
         #expect(location.rules.lastPathComponent == "rules.json")
         #expect(location.decisions.lastPathComponent == "decisions.jsonl")
+        #expect(location.rejected.lastPathComponent == "rejected.json")
     }
 }

@@ -35,11 +35,10 @@ public struct Rule: Hashable, Sendable, Identifiable {
     }
 }
 
-/// On disk the action is either `"open": {browser}` or `"alwaysAsk": true`; `id`, `enabled`
-/// and `origin` may be omitted when hand-writing a rule.
-extension Rule: Codable {
+/// Encoded as `"open": {browser}` or `"alwaysAsk": true`, inline in the enclosing object.
+extension RuleAction: Codable {
     private enum CodingKeys: String, CodingKey {
-        case id, pattern, sourceApp, open, alwaysAsk, enabled, origin, note
+        case open, alwaysAsk
     }
 
     public init(from decoder: Decoder) throws {
@@ -47,13 +46,34 @@ extension Rule: Codable {
         let target = try c.decodeIfPresent(BrowserTarget.self, forKey: .open)
         let alwaysAsk = try c.decodeIfPresent(Bool.self, forKey: .alwaysAsk) ?? false
         switch (target, alwaysAsk) {
-        case (let target?, false): action = .open(target)
-        case (nil, true): action = .alwaysAsk
+        case (let target?, false): self = .open(target)
+        case (nil, true): self = .alwaysAsk
         default:
             throw DecodingError.dataCorruptedError(
                 forKey: .open, in: c,
                 debugDescription: "rule needs exactly one of open or alwaysAsk")
         }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .open(let target): try c.encode(target, forKey: .open)
+        case .alwaysAsk: try c.encode(true, forKey: .alwaysAsk)
+        }
+    }
+}
+
+/// On disk a rule is one flat object; `id`, `enabled` and `origin` may be omitted when
+/// hand-writing it.
+extension Rule: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case id, pattern, sourceApp, enabled, origin, note
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        action = try RuleAction(from: decoder)
         id = try c.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
         pattern = try c.decode(Pattern.self, forKey: .pattern)
         sourceAppBundleID = try c.decodeIfPresent(String.self, forKey: .sourceApp)
@@ -67,10 +87,7 @@ extension Rule: Codable {
         try c.encode(id, forKey: .id)
         try c.encode(pattern, forKey: .pattern)
         try c.encodeIfPresent(sourceAppBundleID, forKey: .sourceApp)
-        switch action {
-        case .open(let target): try c.encode(target, forKey: .open)
-        case .alwaysAsk: try c.encode(true, forKey: .alwaysAsk)
-        }
+        try action.encode(to: encoder)
         try c.encode(enabled, forKey: .enabled)
         try c.encode(origin, forKey: .origin)
         try c.encodeIfPresent(note, forKey: .note)

@@ -1,0 +1,16 @@
+{
+  "rules": [
+    {
+      "enabled": true,
+      "id": "00000000-0000-4000-8000-0000000000A1",
+      "open": {
+        "bundleID": "com.google.Chrome"
+      },
+      "origin": "manual",
+      "pattern": {
+        "hostWildcard": "*.atlassian.net"
+      }
+    }
+  ],
+  "version": 1
+}

@@ -16,22 +16,3 @@ func rules(_ arguments: Arguments) throws {
         throw CLIError.usage("rules needs list or validate")
     }
 }
-
-extension Rule {
-    /// `github.com/acme/*  → com.brave.Browser  from com.tinyspeck.slackmacgap`
-    fileprivate var summary: String {
-        var parts = ["\(pattern)", "→ \(action.summary)"]
-        if let sourceAppBundleID { parts.append("from \(sourceAppBundleID)") }
-        if !enabled { parts.append("(disabled)") }
-        return parts.joined(separator: "  ")
-    }
-}
-
-extension RuleAction {
-    fileprivate var summary: String {
-        switch self {
-        case .open(let target): target.bundleID + (target.profileDirectory.map { " (\($0))" } ?? "")
-        case .alwaysAsk: "ask"
-        }
-    }
-}

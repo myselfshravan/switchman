@@ -1,0 +1,341 @@
+[
+  {
+    "action" : {
+      "open" : {
+        "bundleID" : "com.brave.Browser"
+      }
+    },
+    "confidence" : 1,
+    "examples" : [
+      {
+        "hints" : {
+
+        },
+        "host" : "github.com",
+        "pathSegments" : [
+          "acme",
+          "api",
+          "pull",
+          "12"
+        ],
+        "registrableDomain" : "github.com",
+        "scheme" : "https"
+      },
+      {
+        "hints" : {
+
+        },
+        "host" : "github.com",
+        "pathSegments" : [
+          "acme",
+          "web"
+        ],
+        "registrableDomain" : "github.com",
+        "scheme" : "https"
+      },
+      {
+        "hints" : {
+
+        },
+        "host" : "github.com",
+        "pathSegments" : [
+          "acme",
+          "infra",
+          "issues"
+        ],
+        "registrableDomain" : "github.com",
+        "scheme" : "https"
+      }
+    ],
+    "origin" : "learned",
+    "pattern" : {
+      "urlPrefix" : "github.com/acme/"
+    },
+    "support" : 40
+  },
+  {
+    "action" : {
+      "open" : {
+        "bundleID" : "com.google.Chrome"
+      }
+    },
+    "confidence" : 1,
+    "examples" : [
+      {
+        "hints" : {
+
+        },
+        "host" : "youtube.com",
+        "pathSegments" : [
+          "watch"
+        ],
+        "registrableDomain" : "youtube.com",
+        "scheme" : "https"
+      },
+      {
+        "hints" : {
+
+        },
+        "host" : "m.youtube.com",
+        "pathSegments" : [
+          "watch"
+        ],
+        "registrableDomain" : "youtube.com",
+        "scheme" : "https"
+      }
+    ],
+    "origin" : "learned",
+    "pattern" : {
+      "hostWildcard" : "*.youtube.com"
+    },
+    "support" : 33
+  },
+  {
+    "action" : {
+      "open" : {
+        "bundleID" : "com.brave.Browser"
+      }
+    },
+    "confidence" : 0.9655172413793104,
+    "examples" : [
+      {
+        "hints" : {
+
+        },
+        "host" : "notion.so",
+        "pathSegments" : [
+          "acme",
+          "Roadmap-123"
+        ],
+        "registrableDomain" : "notion.so",
+        "scheme" : "https"
+      }
+    ],
+    "origin" : "learned",
+    "pattern" : {
+      "hostWildcard" : "*.notion.so"
+    },
+    "support" : 29
+  },
+  {
+    "action" : {
+      "open" : {
+        "bundleID" : "com.google.Chrome"
+      }
+    },
+    "confidence" : 1,
+    "examples" : [
+      {
+        "hints" : {
+
+        },
+        "host" : "github.com",
+        "pathSegments" : [
+          "shravan",
+          "dotfiles"
+        ],
+        "registrableDomain" : "github.com",
+        "scheme" : "https"
+      },
+      {
+        "hints" : {
+
+        },
+        "host" : "github.com",
+        "pathSegments" : [
+          "shravan",
+          "blog"
+        ],
+        "registrableDomain" : "github.com",
+        "scheme" : "https"
+      }
+    ],
+    "origin" : "learned",
+    "pattern" : {
+      "urlPrefix" : "github.com/shravan/"
+    },
+    "support" : 25
+  },
+  {
+    "action" : {
+      "alwaysAsk" : true
+    },
+    "confidence" : 0.5454545454545454,
+    "examples" : [
+      {
+        "hints" : {
+
+        },
+        "host" : "mail.google.com",
+        "pathSegments" : [
+          "mail",
+          "u",
+          "1"
+        ],
+        "registrableDomain" : "google.com",
+        "scheme" : "https"
+      },
+      {
+        "hints" : {
+
+        },
+        "host" : "mail.google.com",
+        "pathSegments" : [
+          "mail",
+          "u",
+          "0"
+        ],
+        "registrableDomain" : "google.com",
+        "scheme" : "https"
+      }
+    ],
+    "origin" : "learned",
+    "pattern" : {
+      "host" : "mail.google.com"
+    },
+    "support" : 22
+  },
+  {
+    "action" : {
+      "open" : {
+        "bundleID" : "com.brave.Browser"
+      }
+    },
+    "confidence" : 1,
+    "examples" : [
+      {
+        "hints" : {
+          "authuser" : "1"
+        },
+        "host" : "docs.google.com",
+        "pathSegments" : [
+          "document",
+          "d",
+          "work1",
+          "edit"
+        ],
+        "registrableDomain" : "google.com",
+        "scheme" : "https"
+      }
+    ],
+    "origin" : "learned",
+    "pattern" : {
+      "regex" : "^docs\\.google\\.com(/[^?]*)?\\?authuser=1$"
+    },
+    "support" : 20
+  },
+  {
+    "action" : {
+      "open" : {
+        "bundleID" : "com.google.Chrome"
+      }
+    },
+    "confidence" : 1,
+    "examples" : [
+      {
+        "hints" : {
+
+        },
+        "host" : "docs.google.com",
+        "pathSegments" : [
+          "document",
+          "d",
+          "home1",
+          "edit"
+        ],
+        "registrableDomain" : "google.com",
+        "scheme" : "https"
+      }
+    ],
+    "origin" : "learned",
+    "pattern" : {
+      "regex" : "^docs\\.google\\.com(/[^?]*)?$"
+    },
+    "support" : 15
+  },
+  {
+    "action" : {
+      "open" : {
+        "bundleID" : "com.brave.Browser"
+      }
+    },
+    "confidence" : 1,
+    "examples" : [
+      {
+        "hints" : {
+
+        },
+        "host" : "figma.com",
+        "pathSegments" : [
+          "file",
+          "WORK",
+          "design"
+        ],
+        "registrableDomain" : "figma.com",
+        "scheme" : "https"
+      }
+    ],
+    "origin" : "learned",
+    "pattern" : {
+      "hostWildcard" : "*.figma.com"
+    },
+    "sourceAppBundleID" : "com.tinyspeck.slackmacgap",
+    "support" : 12
+  },
+  {
+    "action" : {
+      "open" : {
+        "bundleID" : "com.google.Chrome"
+      }
+    },
+    "confidence" : 1,
+    "examples" : [
+      {
+        "hints" : {
+
+        },
+        "host" : "gist.github.com",
+        "pathSegments" : [
+          "shravan",
+          "abc123"
+        ],
+        "registrableDomain" : "github.com",
+        "scheme" : "https"
+      }
+    ],
+    "origin" : "learned",
+    "pattern" : {
+      "host" : "gist.github.com"
+    },
+    "support" : 8
+  },
+  {
+    "action" : {
+      "open" : {
+        "bundleID" : "com.google.Chrome"
+      }
+    },
+    "confidence" : 1,
+    "examples" : [
+      {
+        "hints" : {
+
+        },
+        "host" : "figma.com",
+        "pathSegments" : [
+          "file",
+          "HOME",
+          "sketch"
+        ],
+        "registrableDomain" : "figma.com",
+        "scheme" : "https"
+      }
+    ],
+    "origin" : "learned",
+    "pattern" : {
+      "hostWildcard" : "*.figma.com"
+    },
+    "sourceAppBundleID" : "com.apple.MobileSMS",
+    "support" : 8
+  }
+]

@@ -34,8 +34,29 @@ public struct RuleStore: Sendable {
         lastError = nil
     }
 
-    /// Adds `rule` at the top, so it takes precedence over older, broader rules.
+    /// Adds `rule` at the top, so it takes precedence over older, broader rules. An any-source
+    /// rule goes below the source-scoped rules at the top, so it can't shadow them.
     public mutating func add(_ rule: Rule) throws {
-        try save([rule] + rules)
+        var updated = rules
+        let index =
+            rule.sourceAppBundleID == nil
+            ? updated.firstIndex { $0.sourceAppBundleID == nil } ?? updated.endIndex : 0
+        updated.insert(rule, at: index)
+        try save(updated)
+    }
+
+    /// Suggestions the user rejected, so the learner never proposes them again.
+    public func loadRejected() -> Set<SuggestionShape> {
+        guard let data = try? Data(contentsOf: location.rejected) else { return [] }
+        return (try? JSONDecoder().decode(Set<SuggestionShape>.self, from: data)) ?? []
+    }
+
+    public func reject(_ shape: SuggestionShape) throws {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
+        let all = loadRejected().union([shape]).sorted { "\($0)" < "\($1)" }
+        try FileManager.default.createDirectory(
+            at: location.base, withIntermediateDirectories: true)
+        try encoder.encode(all).write(to: location.rejected, options: .atomic)
     }
 }

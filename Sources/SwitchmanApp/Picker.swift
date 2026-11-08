@@ -59,12 +59,14 @@ final class PickerController {
         finish(with: model.choices[index], remember: model.state.remember)
     }
 
+    /// Takes the completion before hiding the panel: `orderOut` posts `didResignKey`
+    /// synchronously, which re-enters here as a cancel and must find nothing left to cancel.
     private func finish(with choice: BrowserChoice?, remember: Bool = false) {
+        let completion = self.completion
+        self.completion = nil
         if let keyMonitor { NSEvent.removeMonitor(keyMonitor) }
         keyMonitor = nil
         if panel.isVisible { panel.orderOut(nil) }
-        let completion = self.completion
-        self.completion = nil
         completion?(choice, remember)
     }
 
@@ -100,7 +102,8 @@ final class PickerController {
         panel.isOpaque = false
         panel.backgroundColor = .clear
         panel.hasShadow = true
-        panel.contentView = NSHostingView(rootView: PickerView(model: model, controller: self))
+        panel.contentView = FirstClickHostingView(
+            rootView: PickerView(model: model, controller: self))
         NotificationCenter.default.addObserver(
             forName: NSWindow.didResignKeyNotification, object: panel, queue: .main
         ) { [weak self] _ in
@@ -113,6 +116,11 @@ final class PickerController {
 /// Borderless panels refuse key status by default; the picker needs the keyboard.
 private final class KeyPanel: NSPanel {
     override var canBecomeKey: Bool { true }
+}
+
+/// The picker sits over another app's window; a click on a row must pick, not just focus.
+private final class FirstClickHostingView<Content: View>: NSHostingView<Content> {
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 }
 
 struct PickerView: View {

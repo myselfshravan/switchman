@@ -6,6 +6,12 @@ uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Picking a browser in the picker (click, number key or Return) opened nothing: hiding the
+  panel re-entered the cancel path and discarded the choice.
+- A click on a picker row now picks on the first click, even before the panel has focus.
+
 ## [0.1.0] - 2026-11-09
 
 First release.

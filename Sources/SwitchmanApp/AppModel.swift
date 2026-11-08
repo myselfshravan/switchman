@@ -93,8 +93,8 @@ final class AppModel {
     }
 
     /// Asks, starting from what the learner already believes: a hinted browser is highlighted
-    /// and "always use" pre-ticked, so Return accepts the learned rule. Without a hint the
-    /// checkbox offers a domain-wide rule, unticked.
+    /// with "always use" pre-ticked for it, so Return accepts the learned rule. Without a hint
+    /// the checkbox offers a domain-wide rule, unticked.
     private func showPicker(for url: URL, key: URLKey, sourceApp: String?, reason: RouteResult) {
         let choices = visibleBrowsers
         guard !choices.isEmpty else { return openInFallback(url) }
@@ -103,7 +103,7 @@ final class AppModel {
         picker.show(
             link: key.description, source: sourceApp.map(appName), choices: choices,
             rememberLabel: hinted != nil ? hint?.label : "Remember for \(key.registrableDomain)",
-            highlighted: hinted ?? 0, remember: hinted != nil
+            suggested: hinted
         ) { [weak self] choice, remember in
             guard let self, let choice else { return }
             if remember {

@@ -6,8 +6,9 @@ public struct PickerHint: Equatable, Sendable {
     public var rule: Rule
     public var label: String
 
-    /// Lower bar than the Suggestions inbox (5): three consistent picks are enough to offer.
-    public static let config = SuggestionConfig(minSupport: 3)
+    /// Lower bar than the Suggestions inbox (5): two consistent picks, on any links of the
+    /// same domain, are enough to *offer* a rule, because it's only applied on confirmation.
+    public static let config = SuggestionConfig(minSupport: 2)
 
     /// The first suggestion that would open `key` (from `sourceApp`) in a browser.
     public static func find(for key: URLKey, sourceApp: String?, in suggestions: [Suggestion])

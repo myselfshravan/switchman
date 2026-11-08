@@ -8,7 +8,8 @@ uses [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Learning shows up in the picker: after 3 consistent picks for a link, the picker highlights
+- Learning shows up in the picker: after 2 consistent picks on a domain (any links, e.g. two
+  different merge requests), the picker highlights
   the learned browser and pre-ticks "Always use this for <pattern>", so one Return accepts
   the precise learned rule (the Suggestions inbox still needs 5).
 

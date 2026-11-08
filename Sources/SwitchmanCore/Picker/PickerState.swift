@@ -12,13 +12,25 @@ public struct PickerState: Sendable {
     }
 
     public let count: Int
+    /// The browser the learner suggests, if any: highlighted first, with "remember" pre-ticked.
+    public let suggested: Int?
     public private(set) var highlighted = 0
-    public private(set) var remember = false
+    /// Set once the user toggles the checkbox; until then it follows the suggestion.
+    private var explicitRemember: Bool?
 
-    public init(count: Int, highlighted: Int = 0, remember: Bool = false) {
+    public init(count: Int, suggested: Int? = nil) {
         self.count = count
-        self.highlighted = (0..<max(count, 1)).contains(highlighted) ? highlighted : 0
-        self.remember = remember
+        self.suggested = suggested.flatMap { (0..<count).contains($0) ? $0 : nil }
+        highlighted = self.suggested ?? 0
+    }
+
+    /// What the checkbox shows. The pre-tick belongs to the suggested browser only, so
+    /// picking a different one never creates a rule the user didn't ask for.
+    public var remember: Bool { remember(for: highlighted) }
+
+    /// Whether picking `index` (by click, number or Return) should create a rule.
+    public func remember(for index: Int) -> Bool {
+        explicitRemember ?? (index == suggested)
     }
 
     /// Applies `key`; returns an outcome when the picker should close.
@@ -27,10 +39,10 @@ public struct PickerState: Sendable {
         case .cancel:
             return .cancel
         case .toggleRemember:
-            remember.toggle()
+            explicitRemember = !remember
             return nil
         case .number(let n) where (1...min(count, 9)).contains(n):
-            return .pick(index: n - 1, remember: remember)
+            return .pick(index: n - 1, remember: remember(for: n - 1))
         case .confirm where count > 0:
             return .pick(index: highlighted, remember: remember)
         case .up where count > 0:

@@ -70,17 +70,31 @@ import Testing
 
 @Suite struct PickerHintTests {
     let suggestions = SuggestionEngine.suggest(
-        decisions: picks(3, "https://gitlab.com/acme/x", brave, source: slack)
-            + picks(3, "https://figma.com/f", chrome),
+        decisions: picks(
+            1, "https://gitlab.com/acme/app/-/merge_requests/1834", brave, source: slack)
+            + picks(1, "https://gitlab.com/acme/app/-/merge_requests/1836", brave, source: slack)
+            + picks(2, "https://figma.com/f", chrome),
         existingRules: [], config: PickerHint.config)
 
-    @Test func learnsAfterThreeConsistentPicks() throws {
+    @Test func twoPicksOfDifferentLinksOnOneDomainAreEnough() throws {
         let hint = try #require(
             PickerHint.find(for: key("https://gitlab.com/other"), sourceApp: slack, in: suggestions)
         )
         #expect(hint.target == brave)
         #expect(hint.rule.pattern == .hostWildcard("*.gitlab.com"))
-        #expect(hint.label == "Always use this for *.gitlab.com (picked 3×)")
+        #expect(hint.label == "Always use this for *.gitlab.com (picked 2×)")
+    }
+
+    @Test func onePickOrMixedPicksGiveNoHint() {
+        let one = SuggestionEngine.suggest(
+            decisions: picks(1, "https://gitlab.com/a", brave), existingRules: [],
+            config: PickerHint.config)
+        #expect(PickerHint.find(for: key("https://gitlab.com/a"), sourceApp: nil, in: one) == nil)
+        let mixed = SuggestionEngine.suggest(
+            decisions: picks(1, "https://gitlab.com/a", brave)
+                + picks(1, "https://gitlab.com/a", chrome),
+            existingRules: [], config: PickerHint.config)
+        #expect(PickerHint.find(for: key("https://gitlab.com/a"), sourceApp: nil, in: mixed) == nil)
     }
 
     @Test func onlyMatchingKeysAndOpenSuggestionsGiveHints() {
@@ -95,8 +109,26 @@ import Testing
         #expect(PickerHint.find(for: key("https://a.com"), sourceApp: nil, in: ask) == nil)
     }
 
-    @Test func pickerStartsOnTheHintedChoiceWithRememberTicked() {
-        var state = PickerState(count: 3, highlighted: 2, remember: true)
+    @Test func returnAcceptsTheSuggestedChoiceWithRemember() {
+        var state = PickerState(count: 3, suggested: 2)
+        #expect(state.highlighted == 2)
+        #expect(state.remember)
         #expect(state.handle(.confirm) == .pick(index: 2, remember: true))
+    }
+
+    @Test func pickingAnotherBrowserDoesNotInheritThePreTick() {
+        var state = PickerState(count: 3, suggested: 2)
+        #expect(state.handle(.number(1)) == .pick(index: 0, remember: false))
+    }
+
+    @Test func explicitToggleIsRespectedForAnyChoice() {
+        var untick = PickerState(count: 3, suggested: 2)
+        _ = untick.handle(.toggleRemember)
+        #expect(untick.handle(.confirm) == .pick(index: 2, remember: false))
+
+        var retick = PickerState(count: 3, suggested: 2)
+        _ = retick.handle(.toggleRemember)
+        _ = retick.handle(.toggleRemember)
+        #expect(retick.handle(.number(1)) == .pick(index: 0, remember: true))
     }
 }

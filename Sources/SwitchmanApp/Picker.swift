@@ -27,7 +27,7 @@ final class PickerController {
 
     func show(
         link: String, source: String?, choices: [BrowserChoice], rememberLabel: String?,
-        highlighted: Int = 0, remember: Bool = false, completion: @escaping Completion
+        suggested: Int? = nil, completion: @escaping Completion
     ) {
         finish(with: nil)
         model.link = link
@@ -35,7 +35,7 @@ final class PickerController {
         model.rememberLabel = rememberLabel
         model.choices = choices
         model.state = PickerState(
-            count: choices.count, highlighted: highlighted, remember: remember)
+            count: choices.count, suggested: suggested)
         self.completion = completion
 
         let size = panel.contentView?.fittingSize ?? NSSize(width: 320, height: 200)
@@ -58,7 +58,7 @@ final class PickerController {
     }
 
     func click(_ index: Int) {
-        finish(with: model.choices[index], remember: model.state.remember)
+        finish(with: model.choices[index], remember: model.state.remember(for: index))
     }
 
     /// Takes the completion before hiding the panel: `orderOut` posts `didResignKey`

@@ -29,6 +29,6 @@ jobs:
         run: |
           version="${GITHUB_REF_NAME#v}"
           awk -v v="$version" '$0 ~ "^## \\[" v "\\]" {on=1; next} /^## \[/ {on=0} on' CHANGELOG.md > out/notes.md
-          shasum -a 256 out/Switchman-*.dmg | tee out/SHA256SUMS
+          (cd out && shasum -a 256 Switchman-*.dmg | tee SHA256SUMS)
           gh release create "$GITHUB_REF_NAME" out/Switchman-*.dmg out/SHA256SUMS \
             --title "Switchman $GITHUB_REF_NAME" --notes-file out/notes.md

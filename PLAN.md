@@ -39,13 +39,23 @@ Running checklist. The spec is the design brief. This file tracks progress and d
 - [x] **M5 — Import**: `HistoryImporter` (SQLite3, temp copy), `switchman import`, Import tab
 - [x] **M6 — Explain & correct**: last 10 links with reasons in the menu, "Re-open last link in…" (menu + global hotkey) → `.corrected` decisions → "rule #N disagrees with you K times" with one-click fix
 
+- [x] **M7 — Polish & release**
+  - [x] Onboarding (welcome section on first launch), launch at login (`SMAppService`), tracking-param stripping
+  - [x] Placeholder icon (`scripts/make_icon.sh`), `build_app.sh` (universal, unsigned), `make_dmg.sh`
+  - [x] Release workflow: tag `v*` → check → build → DMG + SHA256SUMS → GitHub release with CHANGELOG notes
+  - [x] README (pitch, install, rules reference, CLI, privacy, comparison), CONTRIBUTING (manual UI checklist), issue templates
+  - [x] `v0.1.0`
+
 ## In progress
 
 _Nothing in progress._
 
 ## Next
 
-- [ ] **M7** — Polish, packaging, `v0.1.0`
+- [ ] Run the manual UI checklist (CONTRIBUTING.md) on a real day of clicking
+- [ ] Signing + notarisation (needs an Apple Developer ID; author's call)
+- [ ] Homebrew tap + cask once there's a notarised build
+- [ ] v2: Chromium extension → `switchman://open?url=…` (scheme already reserved)
 
 ## Decisions log
 

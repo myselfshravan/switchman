@@ -8,7 +8,8 @@ import SwitchmanCore
 final class PickerViewModel {
     var link = ""
     var source: String?
-    var domain: String?
+    /// Text of the remember checkbox; nil hides it.
+    var rememberLabel: String?
     var choices: [BrowserChoice] = []
     var state = PickerState(count: 0)
 }
@@ -25,15 +26,16 @@ final class PickerController {
     private var keyMonitor: Any?
 
     func show(
-        link: String, source: String?, domain: String?, choices: [BrowserChoice],
-        completion: @escaping Completion
+        link: String, source: String?, choices: [BrowserChoice], rememberLabel: String?,
+        highlighted: Int = 0, remember: Bool = false, completion: @escaping Completion
     ) {
         finish(with: nil)
         model.link = link
         model.source = source
-        model.domain = domain
+        model.rememberLabel = rememberLabel
         model.choices = choices
-        model.state = PickerState(count: choices.count)
+        model.state = PickerState(
+            count: choices.count, highlighted: highlighted, remember: remember)
         self.completion = completion
 
         let size = panel.contentView?.fittingSize ?? NSSize(width: 320, height: 200)
@@ -139,9 +141,9 @@ struct PickerView: View {
             ForEach(Array(model.choices.enumerated()), id: \.element.id) { index, choice in
                 row(index, choice)
             }
-            if let domain = model.domain {
+            if let label = model.rememberLabel {
                 Toggle(
-                    "Remember for \(domain)  ⌘R",
+                    "\(label)  ⌘R",
                     isOn: Binding(
                         get: { model.state.remember },
                         set: { _ in controller.press(.toggleRemember) })

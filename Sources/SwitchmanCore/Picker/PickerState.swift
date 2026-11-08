@@ -15,8 +15,10 @@ public struct PickerState: Sendable {
     public private(set) var highlighted = 0
     public private(set) var remember = false
 
-    public init(count: Int) {
+    public init(count: Int, highlighted: Int = 0, remember: Bool = false) {
         self.count = count
+        self.highlighted = (0..<max(count, 1)).contains(highlighted) ? highlighted : 0
+        self.remember = remember
     }
 
     /// Applies `key`; returns an outcome when the picker should close.

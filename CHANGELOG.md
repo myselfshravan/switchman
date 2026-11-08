@@ -6,6 +6,12 @@ uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Learning shows up in the picker: after 3 consistent picks for a link, the picker highlights
+  the learned browser and pre-ticks "Always use this for <pattern>", so one Return accepts
+  the precise learned rule (the Suggestions inbox still needs 5).
+
 ### Fixed
 
 - Picking a browser in the picker (click, number key or Return) opened nothing: hiding the

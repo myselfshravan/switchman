@@ -22,6 +22,8 @@ final class AppModel {
     private(set) var recent: [RecentLink] = []
     private(set) var suggestions: [Suggestion] = []
     private(set) var disagreements: [Disagreement] = []
+    /// Suggestions at the picker's lower bar, refreshed with `suggestions`.
+    private var hints: [Suggestion] = []
     var importedSuggestions: [Suggestion] = []
     private(set) var isDefaultBrowser = false
     private(set) var lastError: String?
@@ -90,15 +92,24 @@ final class AppModel {
         }
     }
 
+    /// Asks, starting from what the learner already believes: a hinted browser is highlighted
+    /// and "always use" pre-ticked, so Return accepts the learned rule. Without a hint the
+    /// checkbox offers a domain-wide rule, unticked.
     private func showPicker(for url: URL, key: URLKey, sourceApp: String?, reason: RouteResult) {
         let choices = visibleBrowsers
         guard !choices.isEmpty else { return openInFallback(url) }
+        let hint = PickerHint.find(for: key, sourceApp: sourceApp, in: hints)
+        let hinted = hint.flatMap { h in choices.firstIndex { $0.target == h.target } }
         picker.show(
-            link: key.description, source: sourceApp.map(appName), domain: key.registrableDomain,
-            choices: choices
+            link: key.description, source: sourceApp.map(appName), choices: choices,
+            rememberLabel: hinted != nil ? hint?.label : "Remember for \(key.registrableDomain)",
+            highlighted: hinted ?? 0, remember: hinted != nil
         ) { [weak self] choice, remember in
             guard let self, let choice else { return }
-            if remember { self.addRule(.remembering(key, opensIn: choice.target)) }
+            if remember {
+                let learned = hint.flatMap { $0.target == choice.target ? $0.rule : nil }
+                self.addRule(learned ?? .remembering(key, opensIn: choice.target))
+            }
             self.open(url, key: key, sourceApp: sourceApp, in: choice.target, kind: .picked, reason)
         }
     }
@@ -154,7 +165,7 @@ final class AppModel {
         let others = visibleBrowsers.filter { $0.target != last.target }
         if others.count == 1 { return reopen(last, in: others[0].target) }
         picker.show(
-            link: last.key.description, source: "re-open in…", domain: nil, choices: others
+            link: last.key.description, source: "re-open in…", choices: others, rememberLabel: nil
         ) { [weak self] choice, _ in
             if let choice { self?.reopen(last, in: choice.target) }
         }
@@ -200,6 +211,9 @@ final class AppModel {
         let rejected = store.loadRejected()
         suggestions = SuggestionEngine.suggest(
             decisions: decisions, existingRules: store.rules, rejected: rejected)
+        hints = SuggestionEngine.suggest(
+            decisions: decisions, existingRules: store.rules, rejected: rejected,
+            config: PickerHint.config)
         disagreements = SuggestionEngine.disagreements(decisions: decisions, rules: store.rules)
         importedSuggestions.removeAll { rejected.contains($0.shape) }
     }

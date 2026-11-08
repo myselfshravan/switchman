@@ -67,3 +67,36 @@ import Testing
         #expect(rule.sourceAppBundleID == nil)
     }
 }
+
+@Suite struct PickerHintTests {
+    let suggestions = SuggestionEngine.suggest(
+        decisions: picks(3, "https://gitlab.com/acme/x", brave, source: slack)
+            + picks(3, "https://figma.com/f", chrome),
+        existingRules: [], config: PickerHint.config)
+
+    @Test func learnsAfterThreeConsistentPicks() throws {
+        let hint = try #require(
+            PickerHint.find(for: key("https://gitlab.com/other"), sourceApp: slack, in: suggestions)
+        )
+        #expect(hint.target == brave)
+        #expect(hint.rule.pattern == .hostWildcard("*.gitlab.com"))
+        #expect(hint.label == "Always use this for *.gitlab.com (picked 3×)")
+    }
+
+    @Test func onlyMatchingKeysAndOpenSuggestionsGiveHints() {
+        #expect(
+            PickerHint.find(for: key("https://example.com"), sourceApp: nil, in: suggestions) == nil
+        )
+        let ask = [
+            Suggestion(
+                pattern: .host("a.com"), sourceAppBundleID: nil, action: .alwaysAsk, support: 9,
+                confidence: 0.5, examples: [], origin: .learned)
+        ]
+        #expect(PickerHint.find(for: key("https://a.com"), sourceApp: nil, in: ask) == nil)
+    }
+
+    @Test func pickerStartsOnTheHintedChoiceWithRememberTicked() {
+        var state = PickerState(count: 3, highlighted: 2, remember: true)
+        #expect(state.handle(.confirm) == .pick(index: 2, remember: true))
+    }
+}
